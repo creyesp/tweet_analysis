@@ -5,3 +5,4 @@ spacy
 nltk
 tweepy
 nltk==3.4.5
+wordcloud
