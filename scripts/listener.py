@@ -2,6 +2,9 @@ import argparse
 from datetime import datetime
 import json
 import logging
+import os
+from pathlib import Path
+
 
 import tweepy
 from pymongo import MongoClient
@@ -83,7 +86,10 @@ class UyStreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
-    api = get_twitter_api(keys='../credentials/twitter_credentials.json')
+    path = Path(os.path.realpath(__file__))
+    credential_path = os.path.join(
+        path.parent.parent, 'credentials', 'twitter_credentials.json')
+    api = get_twitter_api(keys=credential_path)
     myStream = tweepy.Stream(auth=api.auth,
                              listener=UyStreamListener(save_to='mongo'))
 
