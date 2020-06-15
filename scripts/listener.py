@@ -2,6 +2,9 @@ import argparse
 from datetime import datetime
 import json
 import logging
+import os
+from pathlib import Path
+
 
 import tweepy
 from pymongo import MongoClient
@@ -22,6 +25,9 @@ def get_arguments():
                         type=list)
     parser.add_argument('--lang',
                         help='filter by lenguage. ex "es"',
+                        type=list)
+    parser.add_argument('--locations',
+                        help='four points of a area. [lat1,log1,lat2,log2]',
                         type=list)
     args = parser.parse_args()
     return args
@@ -83,7 +89,10 @@ class UyStreamListener(tweepy.StreamListener):
 
 
 if __name__ == '__main__':
-    api = get_twitter_api(keys='../credentials/twitter_credentials.json')
+    path = Path(os.path.realpath(__file__))
+    credential_path = os.path.join(
+        path.parent.parent, 'credentials', 'twitter_credentials.json')
+    api = get_twitter_api(keys=credential_path)
     myStream = tweepy.Stream(auth=api.auth,
                              listener=UyStreamListener(save_to='mongo'))
 
@@ -91,11 +100,12 @@ if __name__ == '__main__':
     track = args.track
     user_id = args.user_id
     lang = args.lang
-
+    locations = args.locations
+    print(track)
     myStream.filter(follow=user_id,
                     track=track,
                     is_async=False,
-                    locations=None,
+                    locations=locations,
                     stall_warnings=False,
                     languages=lang,
                     encoding='utf8',
